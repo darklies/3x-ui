@@ -64,6 +64,7 @@
 
 [menu]
 "dashboard" = "Visão Geral"
+"overview" = "Inbound Overview"
 "inbounds" = "Inbounds"
 "settings" = "Panel Settings"
 "xray" = "Xray Configs"
@@ -599,3 +600,18 @@
 "askToAddUserId" = "Sua configuração não foi encontrada!\r\nPeça ao seu administrador para usar seu Telegram ChatID em suas configurações.\r\n\r\nSeu ChatID: <code>{{ .TgUserID }}</code>"
 "chooseClient" = "Escolha um cliente para Inbound {{ .Inbound }}"
 "chooseInbound" = "Escolha um Inbound"
+
+
+[pages.overview]
+"title" = "Inbound Overview"
+"description" = "Browse inbounds and their clients in a single view."
+"traffic" = "Traffic"
+"clientCount" = "Clients"
+"expiry" = "Expiry"
+"noClients" = "No clients"
+"noInbounds" = "No inbounds"
+"clientEmail" = "Client Email"
+"clientRemark" = "Remark"
+"clientLimit" = "Data Limit"
+"clientTraffic" = "Traffic"
+"clientExpiry" = "Expiry"

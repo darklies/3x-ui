@@ -64,6 +64,7 @@
 
 [menu]
 "dashboard" = "Overview"
+"overview" = "Inbound Overview"
 "inbounds" = "Inbounds"
 "settings" = "Panel Settings"
 "xray" = "Xray Configs"
@@ -238,6 +239,20 @@
 "panelSettings" = "General"
 "securitySettings" = "Authentication"
 "TGBotSettings" = "Telegram Bot"
+
+[pages.overview]
+"title" = "Inbound Overview"
+"description" = "Browse inbounds and their clients in a single view."
+"traffic" = "Traffic"
+"clientCount" = "Clients"
+"expiry" = "Expiry"
+"noClients" = "No clients"
+"noInbounds" = "No inbounds"
+"clientEmail" = "Client Email"
+"clientRemark" = "Remark"
+"clientLimit" = "Data Limit"
+"clientTraffic" = "Traffic"
+"clientExpiry" = "Expiry"
 "panelListeningIP" = "Listen IP"
 "panelListeningIPDesc" = "The IP address for the web panel. (leave blank to listen on all IPs)"
 "panelListeningDomain" = "Listen Domain"

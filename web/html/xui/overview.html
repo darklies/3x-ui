@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "head" .}}
+<style>
+  @media (min-width: 769px) {
+    .ant-layout-content {
+      margin: 24px 16px;
+    }
+  }
+  .overview-card {
+    margin-bottom: 16px;
+  }
+  .overview-extra {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .client-table {
+    margin-top: 12px;
+  }
+</style>
+
+<body>
+  <a-layout id="app" v-cloak :class="themeSwitcher.currentTheme">
+    {{ template "commonSider" . }}
+    <a-layout id="content-layout">
+      <a-layout-content>
+        <a-spin :spinning="loading" :tip="loadingTip">
+          <a-card class="overview-card" :title="texts.title">
+            <p>{{ i18n "pages.overview.description"}}</p>
+            <a-list bordered :data-source="inbounds" :locale="listLocale">
+              <a-list-item slot="renderItem" slot-scope="item">
+                <a-list-item-meta :title="itemTitle(item)" :description="itemSubtitle(item)"></a-list-item-meta>
+                <div class="overview-extra">
+                  <a-tag :color="item.enable ? 'green' : 'red'">
+                    [[ item.enable ? texts.enabled : texts.disabled ]]
+                  </a-tag>
+                  <a-tag>
+                    [[ texts.clientCount ]]: [[ item.clients.length ]]
+                  </a-tag>
+                  <a-tag>
+                    [[ texts.traffic ]]: [[ trafficText(item) ]]
+                  </a-tag>
+                  <a-tag v-if="item.expiryTime">
+                    [[ texts.expiry ]]:
+                    [[ formatDate(item.expiryTime) ]]
+                  </a-tag>
+                </div>
+                <div class="client-table">
+                  <a-table :columns="clientColumns" :data-source="item.clients" :pagination="false" size="small"
+                    :row-key="clientRowKey" :locale="{ emptyText: texts.noClients }">
+                    <span slot="traffic" slot-scope="client">[[ clientTraffic(client) ]]</span>
+                    <span slot="limit" slot-scope="client">[[ clientLimit(client) ]]</span>
+                    <span slot="expiry" slot-scope="client">[[ formatDate(client.expiryTime) ]]</span>
+                  </a-table>
+                </div>
+              </a-list-item>
+            </a-list>
+          </a-card>
+        </a-spin>
+      </a-layout-content>
+    </a-layout>
+  </a-layout>
+  {{template "js" .}}
+  <script>
+    const texts = {
+      title: '{{ i18n "pages.overview.title" }}',
+      enabled: '{{ i18n "enabled" }}',
+      disabled: '{{ i18n "disabled" }}',
+      traffic: '{{ i18n "pages.overview.traffic" }}',
+      clientCount: '{{ i18n "pages.overview.clientCount" }}',
+      expiry: '{{ i18n "pages.overview.expiry" }}',
+      noClients: '{{ i18n "pages.overview.noClients" }}',
+      noInbounds: '{{ i18n "pages.overview.noInbounds" }}',
+      noExpiry: '{{ i18n "indefinite" }}',
+    };
+
+    const clientColumns = [
+      {
+        title: '{{ i18n "pages.overview.clientEmail" }}',
+        dataIndex: 'email',
+        width: '30%',
+      },
+      {
+        title: '{{ i18n "pages.overview.clientRemark" }}',
+        dataIndex: 'comment',
+        width: '30%',
+      },
+      {
+        title: '{{ i18n "pages.overview.clientLimit" }}',
+        dataIndex: 'totalGB',
+        scopedSlots: { customRender: 'limit' },
+      },
+      {
+        title: '{{ i18n "pages.overview.clientTraffic" }}',
+        dataIndex: 'limit',
+        scopedSlots: { customRender: 'traffic' },
+      },
+      {
+        title: '{{ i18n "pages.overview.clientExpiry" }}',
+        dataIndex: 'expiryTime',
+        scopedSlots: { customRender: 'expiry' },
+      },
+    ];
+
+    const app = new Vue({
+      delimiters: ['[[', ']]'],
+      el: '#app',
+      data: {
+        siderDrawer,
+        themeSwitcher,
+        loading: false,
+        loadingTip: '{{ i18n "loading"}}',
+        inbounds: [],
+        texts,
+        clientColumns,
+        listLocale: {
+          emptyText: texts.noInbounds,
+        },
+      },
+      async mounted() {
+        await this.fetchInbounds();
+      },
+      methods: {
+        async fetchInbounds() {
+          this.loading = true;
+          const msg = await HttpUtil.get('/panel/api/overview/inbounds');
+          this.loading = false;
+          if (msg && msg.success) {
+            this.inbounds = (msg.obj || []).map(this.decorateInbound);
+          }
+        },
+        decorateInbound(inbound) {
+          const statsByEmail = {};
+          (inbound.clientStats || []).forEach((stat) => {
+            statsByEmail[stat.email] = stat;
+          });
+
+          const clients = (inbound.clients || []).map((client) => ({
+            ...client,
+            trafficStat: statsByEmail[client.email],
+          }));
+
+          return {
+            ...inbound,
+            clients,
+            address: inbound.listen ? `${inbound.listen}:${inbound.port}` : `:${inbound.port}`,
+          };
+        },
+        itemTitle(item) {
+          return item.remark || `${item.protocol.toUpperCase()} ${item.port}`;
+        },
+        itemSubtitle(item) {
+          return `${item.protocol.toUpperCase()} · ${item.address}`;
+        },
+        trafficText(item) {
+          const used = item.up + item.down;
+          if (!item.total || item.total < 0) {
+            return `${sizeFormat(used)} / {{ i18n "unlimited" }}`;
+          }
+          return `${sizeFormat(used)} / ${sizeFormat(item.total)}`;
+        },
+        clientTraffic(client) {
+          const stat = client.trafficStat || {};
+          const used = (stat.up || 0) + (stat.down || 0);
+          if (used > 0) {
+            if (stat.total && stat.total > 0) {
+              return `${sizeFormat(used)} / ${sizeFormat(stat.total)}`;
+            }
+            return `${sizeFormat(used)} / {{ i18n "unlimited" }}`;
+          }
+          if (client.totalGB && client.totalGB > 0) {
+            return `${client.totalGB} GB`;
+          }
+          return '{{ i18n "unlimited" }}';
+        },
+        clientLimit(client) {
+          if (!client.totalGB || client.totalGB <= 0) {
+            return '{{ i18n "unlimited" }}';
+          }
+          return `${client.totalGB} GB`;
+        },
+        formatDate(timestamp) {
+          if (!timestamp || timestamp <= 0) {
+            return texts.noExpiry || '{{ i18n "indefinite" }}';
+          }
+          return moment(timestamp).format('YYYY-MM-DD HH:mm');
+        },
+        clientRowKey(client) {
+          return client.email || client.id || client.comment || Math.random().toString(36).slice(2);
+        },
+      },
+    });
+  </script>
+</body>
+
+</html>

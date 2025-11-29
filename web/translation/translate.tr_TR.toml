@@ -64,6 +64,7 @@
 
 [menu]
 "dashboard" = "Genel Bakış"
+"overview" = "Inbound Overview"
 "inbounds" = "Gelenler"
 "settings" = "Panel Ayarları"
 "xray" = "Xray Yapılandırmaları"
@@ -599,3 +600,18 @@
 "askToAddUserId" = "Yapılandırmanız bulunamadı!\r\nLütfen yöneticinizden yapılandırmalarınıza Telegram ChatID'nizi eklemesini isteyin.\r\n\r\nKullanıcı ChatID'niz: <code>{{ .TgUserID }}</code>"
 "chooseClient" = "Gelen {{ .Inbound }} için bir Müşteri Seçin"
 "chooseInbound" = "Bir Gelen Seçin"
+
+
+[pages.overview]
+"title" = "Inbound Overview"
+"description" = "Browse inbounds and their clients in a single view."
+"traffic" = "Traffic"
+"clientCount" = "Clients"
+"expiry" = "Expiry"
+"noClients" = "No clients"
+"noInbounds" = "No inbounds"
+"clientEmail" = "Client Email"
+"clientRemark" = "Remark"
+"clientLimit" = "Data Limit"
+"clientTraffic" = "Traffic"
+"clientExpiry" = "Expiry"

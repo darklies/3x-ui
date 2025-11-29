@@ -2,6 +2,7 @@ package controller
 
 import (
 	"x-ui/web/service"
+	"x-ui/web/session"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,6 +11,7 @@ type APIController struct {
 	BaseController
 	inboundController *InboundController
 	Tgbot             service.Tgbot
+	inboundService    service.InboundService
 }
 
 func NewAPIController(g *gin.RouterGroup) *APIController {
@@ -19,10 +21,11 @@ func NewAPIController(g *gin.RouterGroup) *APIController {
 }
 
 func (a *APIController) initRouter(g *gin.RouterGroup) {
-	g = g.Group("/panel/api/inbounds")
-	g.Use(a.checkLogin)
+	apiGroup := g.Group("/panel/api")
+	apiGroup.Use(a.checkLogin)
 
-	a.inboundController = NewInboundController(g)
+	inboundGroup := apiGroup.Group("/inbounds")
+	a.inboundController = NewInboundController(inboundGroup)
 
 	inboundRoutes := []struct {
 		Method  string
@@ -50,10 +53,23 @@ func (a *APIController) initRouter(g *gin.RouterGroup) {
 	}
 
 	for _, route := range inboundRoutes {
-		g.Handle(route.Method, route.Path, route.Handler)
+		inboundGroup.Handle(route.Method, route.Path, route.Handler)
 	}
+
+	overviewGroup := apiGroup.Group("/overview")
+	overviewGroup.GET("/inbounds", a.getInboundOverview)
 }
 
 func (a *APIController) createBackup(c *gin.Context) {
 	a.Tgbot.SendBackupToAdmins()
+}
+
+func (a *APIController) getInboundOverview(c *gin.Context) {
+	user := session.GetLoginUser(c)
+	overview, err := a.inboundService.GetInboundsWithClients(user.Id)
+	if err != nil {
+		jsonMsg(c, I18nWeb(c, "pages.inbounds.toasts.obtain"), err)
+		return
+	}
+	jsonObj(c, overview, nil)
 }
