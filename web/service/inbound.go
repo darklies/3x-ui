@@ -20,6 +20,22 @@ type InboundService struct {
 	xrayApi xray.XrayAPI
 }
 
+// InboundWithClients aggregates an inbound record with its parsed client list.
+type InboundWithClients struct {
+	Id          int                  `json:"id"`
+	Remark      string               `json:"remark"`
+	Listen      string               `json:"listen"`
+	Port        int                  `json:"port"`
+	Protocol    model.Protocol       `json:"protocol"`
+	Enable      bool                 `json:"enable"`
+	ExpiryTime  int64                `json:"expiryTime"`
+	Up          int64                `json:"up"`
+	Down        int64                `json:"down"`
+	Total       int64                `json:"total"`
+	ClientStats []xray.ClientTraffic `json:"clientStats"`
+	Clients     []model.Client       `json:"clients"`
+}
+
 func (s *InboundService) GetInbounds(userId int) ([]*model.Inbound, error) {
 	db := database.GetDB()
 	var inbounds []*model.Inbound
@@ -38,6 +54,37 @@ func (s *InboundService) GetAllInbounds() ([]*model.Inbound, error) {
 		return nil, err
 	}
 	return inbounds, nil
+}
+
+func (s *InboundService) GetInboundsWithClients(userId int) ([]InboundWithClients, error) {
+	inbounds, err := s.GetInbounds(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []InboundWithClients
+	for _, inbound := range inbounds {
+		clients, err := s.GetClients(inbound)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, InboundWithClients{
+			Id:          inbound.Id,
+			Remark:      inbound.Remark,
+			Listen:      inbound.Listen,
+			Port:        inbound.Port,
+			Protocol:    inbound.Protocol,
+			Enable:      inbound.Enable,
+			ExpiryTime:  inbound.ExpiryTime,
+			Up:          inbound.Up,
+			Down:        inbound.Down,
+			Total:       inbound.Total,
+			ClientStats: inbound.ClientStats,
+			Clients:     clients,
+		})
+	}
+
+	return result, nil
 }
 
 func (s *InboundService) checkPortExist(listen string, port int, ignoreId int) (bool, error) {

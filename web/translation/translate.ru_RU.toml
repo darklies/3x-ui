@@ -64,6 +64,7 @@
 
 [menu]
 "dashboard" = "Статус системы"
+"overview" = "Inbound Overview"
 "inbounds" = "Подключения"
 "settings" = "Настройки панели"
 "xray" = "Настройки Xray"
@@ -599,3 +600,18 @@
 "askToAddUserId" = "Ваша конфигурация не найдена!\r\nПожалуйста, попросите администратора использовать ваш идентификатор пользователя Telegram в ваших конфигурациях.\r\n\r\nВаш идентификатор пользователя: <code>{{ .TgUserID }}</code>"
 "chooseClient" = "Выберите пользователя для подключения {{ .Inbound }}"
 "chooseInbound" = "Выберите подключение"
+
+
+[pages.overview]
+"title" = "Inbound Overview"
+"description" = "Browse inbounds and their clients in a single view."
+"traffic" = "Traffic"
+"clientCount" = "Clients"
+"expiry" = "Expiry"
+"noClients" = "No clients"
+"noInbounds" = "No inbounds"
+"clientEmail" = "Client Email"
+"clientRemark" = "Remark"
+"clientLimit" = "Data Limit"
+"clientTraffic" = "Traffic"
+"clientExpiry" = "Expiry"

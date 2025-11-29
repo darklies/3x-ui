@@ -64,6 +64,7 @@
 
 [menu]
 "dashboard" = "Trạng thái hệ thống"
+"overview" = "Inbound Overview"
 "inbounds" = "Đầu vào khách hàng"
 "settings" = "Cài đặt bảng điều khiển"
 "logout" = "Đăng xuất"
@@ -599,3 +600,18 @@
 "askToAddUserId" = "Cấu hình của bạn không được tìm thấy!\r\nVui lòng yêu cầu Quản trị viên sử dụng ID người dùng telegram của bạn trong cấu hình của bạn.\r\n\r\nID người dùng của bạn: <code>{{ .TgUserID }}</code>"
 "chooseClient" = "Chọn một Khách hàng cho Inbound {{ .Inbound }}"
 "chooseInbound" = "Chọn một Inbound"
+
+
+[pages.overview]
+"title" = "Inbound Overview"
+"description" = "Browse inbounds and their clients in a single view."
+"traffic" = "Traffic"
+"clientCount" = "Clients"
+"expiry" = "Expiry"
+"noClients" = "No clients"
+"noInbounds" = "No inbounds"
+"clientEmail" = "Client Email"
+"clientRemark" = "Remark"
+"clientLimit" = "Data Limit"
+"clientTraffic" = "Traffic"
+"clientExpiry" = "Expiry"

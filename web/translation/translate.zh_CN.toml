@@ -64,6 +64,7 @@
 
 [menu]
 "dashboard" = "系统状态"
+"overview" = "Inbound Overview"
 "inbounds" = "入站列表"
 "settings" = "面板设置"
 "xray" = "Xray 设置"
@@ -599,3 +600,18 @@
 "askToAddUserId" = "未找到您的配置！\r\n请向管理员询问，在您的配置中使用您的 Telegram 用户 ChatID。\r\n\r\n您的用户 ChatID：<code>{{ .TgUserID }}</code>"
 "chooseClient" = "为入站 {{ .Inbound }} 选择一个客户"
 "chooseInbound" = "选择一个入站"
+
+
+[pages.overview]
+"title" = "Inbound Overview"
+"description" = "Browse inbounds and their clients in a single view."
+"traffic" = "Traffic"
+"clientCount" = "Clients"
+"expiry" = "Expiry"
+"noClients" = "No clients"
+"noInbounds" = "No inbounds"
+"clientEmail" = "Client Email"
+"clientRemark" = "Remark"
+"clientLimit" = "Data Limit"
+"clientTraffic" = "Traffic"
+"clientExpiry" = "Expiry"
